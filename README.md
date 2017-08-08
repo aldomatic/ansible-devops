@@ -11,6 +11,7 @@ This command will look up the hosts file based on the path supplied and will pro
 ansible-playbook -i PATH-TO-INVENTORY-FILE/hosts --ask-become-pass PLAYBOOK.yml
 ```
 <br>
+
 ## Playbooks
 
 #### Server provision (playbooks/server_provision.yml)
