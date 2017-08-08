@@ -1,0 +1,8 @@
+---
+- hosts: postgres
+  remote_user: dev-user
+  become: yes
+  become_user: postgres
+  gather_facts: no
+  roles:
+    - { role: "roles/postgres" }

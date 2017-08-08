@@ -1,0 +1,3 @@
+dbname: ansibledb
+dbuser: devdb
+dbpassword: coolpassword

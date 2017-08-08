@@ -1,0 +1,32 @@
+---
+- name: DATABASE > Ensure postgres service is running
+  service: name=postgresql
+           state=started
+           enabled=yes
+
+- name: DATABASE > Create database
+  postgresql_db: name={{dbname}} encoding='UTF-8'
+                 lc_collate='en_US.UTF-8'
+                 lc_ctype='en_US.UTF-8'
+                 template='template0'
+                 state=present
+
+
+- name: DATABASE > Ensure user has access to database
+  postgresql_user: db={{dbname}}
+                   name={{dbuser}}
+                   password={{dbpassword}}
+                   priv=ALL
+                   state=present
+
+- name: DATABASE > Ensure user does not have unnecesary privileges
+  postgresql_user: name={{dbuser}}
+                   role_attr_flags=NOSUPERUSER,NOCREATEDB              
+
+
+- name: DATABASE > Ensure no other user can access the database
+  postgresql_privs: db={{dbname}}
+                    role=PUBLIC
+                    type=database
+                    priv=ALL
+                    state=absent                     

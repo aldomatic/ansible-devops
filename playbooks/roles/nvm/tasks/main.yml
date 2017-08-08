@@ -1,0 +1,33 @@
+---
+- name: NODE VERSION MANAGER > Install nvm
+  become: yes
+  become_user: "{{ nvm_user }}"
+  git: repo=https://github.com/creationix/nvm.git dest=~/.nvm
+
+- name: NODE VERSION MANAGER > Source nvm in ~/.profile
+  become: yes
+  become_user: "{{ nvm_user }}"
+  lineinfile: >
+    dest=~/.profile
+    line="source ~/.nvm/nvm.sh"
+    create=yes
+
+- name: NODE VERSION MANAGERER > Install latest version of node
+  command: sudo -iu {{ nvm_user }} nvm install node
+  register: nvm_install_result
+  changed_when: "'is already installed.' not in nvm_install_result.stdout"
+
+- name: NODE VERSION MANAGER > Set default node version to {{ node_version }}
+  command: sudo -iu {{ nvm_user }} nvm use node
+  register: default_node_version
+  #when: nvm_check_default|failed
+- debug: 
+    msg: "{{default_node_version.stdout}}"
+
+
+#   - name: Check if {{ nvm.node_version }} is the default node version
+#     shell: sudo -iu {{ nvm.user }} nvm ls | grep -e 'default -> {{ nvm.node_version }}'
+#     register: nvm_check_default
+#     changed_when: False
+#     ignore_errors: True
+#     tags: nvm
