@@ -1,0 +1,23 @@
+---
+- hosts: webserver
+  remote_user: dev-user
+  become: yes
+  become_method: sudo
+  gather_facts: no
+
+  tasks:
+    - name: DEPLOYMENT | git pull project'
+      git:
+        repo: https://github.com/aldomatic/react-circleci-demo.git
+        dest: /var/www/ansible
+        version: master
+      register: git_output
+    - debug:
+        msg: "status: {{ git_output.changed }} "
+
+  post_tasks: 
+    - name : DEPLOYMENT | npm install
+      shell: cd /var/www/ansible && npm install
+      register: npm_output
+    - debug:
+        msg: "status: {{npm_output}}"

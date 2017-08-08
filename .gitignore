@@ -1,0 +1,3 @@
+hosts
+static_files/*
+playbooks/*.retry

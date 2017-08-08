@@ -1,0 +1,88 @@
+---
+- hosts: webserver
+  remote_user: dev-user
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  roles:
+    - { role: "roles/yarn" }
+
+  vars:
+    nvm_user: dev-user
+    nvm_version: v0.33.2
+    node_version: v8.2.1
+
+  tasks:
+  - name: SERVER | Install required packages
+    apt: name={{ item }} state=installed update_cache=yes
+    with_items:
+        - build-essential
+        - git
+        - curl
+        - libssl-dev
+        - aptitude
+        - python2.7
+
+  - name: SERVER | Install nginx
+    apt: pkg=nginx state=present
+    notify:
+    - start nginx
+
+  - name: SERVER | Install nvm
+    become: yes
+    become_user: "{{ nvm_user }}"
+    git: repo=https://github.com/creationix/nvm.git dest=~/.nvm version={{ nvm_version }}
+
+  - name: SERVER | Source nvm in ~/.profile
+    become: yes
+    become_user: "{{ nvm_user }}"
+    lineinfile: >
+      dest=~/.profile
+      line="source ~/.nvm/nvm.sh"
+      create=yes
+
+  - name: SERVER | Install latest version of node
+    command: sudo -iu {{ nvm_user }} nvm install node
+    register: nvm_install_result
+    changed_when: "'is already installed.' not in nvm_install_result.stdout"
+
+  - name: SERVER | Set default node version to {{ node_version }}
+    command: sudo -iu {{ nvm_user }} nvm use node
+    register: default_node_version
+    #when: nvm_check_default|failed
+  - debug: 
+      msg: "{{default_node_version.stdout}}"
+
+
+#   - name: Check if {{ nvm.node_version }} is the default node version
+#     shell: sudo -iu {{ nvm.user }} nvm ls | grep -e 'default -> {{ nvm.node_version }}'
+#     register: nvm_check_default
+#     changed_when: False
+#     ignore_errors: True
+#     tags: nvm
+
+
+  - name: SERVER | Install postgres and dependency packages are installed
+    apt: name={{item}}
+    with_items:
+        - postgresql
+        - libpq-dev
+        - python-psycopg2
+
+  # - name: UPLOAD DEFAULT INDEX.PHP FOR HOST
+  #   copy: src=../static_files/index.php dest=/var/www/html mode=0644
+  #   register: php
+  #   ignore_errors: True
+
+  # - name: REMOVE INDEX.HTML FOR HOST
+  #   command: rm /var/www/html/index.html
+  #   when: php|success
+
+  # - name: UPLOAD DEFAULT INDEX.HTML FOR HOST
+  #   copy: src=../static_files/index.html dest=/var/www/html mode=0644
+  #   when: php|failed
+
+  handlers:
+      - name: start nginx
+        service: name=nginx state=started
+
