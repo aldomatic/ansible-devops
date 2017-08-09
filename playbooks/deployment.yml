@@ -6,6 +6,8 @@
   gather_facts: no
   
   vars: 
+    node_env: "development"
+    entry_file: "app.js"
     ansistrano_deploy_to: "/var/www/my-app"
     ansistrano_version_dir: "releases"
     ansistrano_current_dir: "current"

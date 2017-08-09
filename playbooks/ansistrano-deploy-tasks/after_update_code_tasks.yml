@@ -1,12 +1,9 @@
 ---
 - name : YARN | Install dependencies
-  command: cd {{ansistrano_release_path.stdout}} && yarn install
+  shell: cd {{ansistrano_release_path.stdout}} && yarn install
   register: yarn_output
 - debug:
     msg: "status: {{yarn_output}}"
 
-- name : APP | Start the application
-  shell:  cd {{ansistrano_release_path.stdout}} && NODE_ENV=development node app.js
-  register: app_output
-- debug:
-    msg: "status: {{app_output}}"  
+- name : <=== STARTING APPLICATION ===>
+  shell:  cd {{ansistrano_release_path.stdout}} && NODE_ENV={{node_env}} node {{entry_file}}
