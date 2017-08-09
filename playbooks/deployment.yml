@@ -1,0 +1,19 @@
+---
+- hosts: webserver
+  remote_user: dev-user
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  
+  vars: 
+    ansistrano_deploy_to: "/var/www/my-app"
+    ansistrano_version_dir: "releases"
+    ansistrano_current_dir: "current"
+    ansistrano_deploy_via: "git"
+    ansistrano_git_repo: https://github.com/aldomatic/react-circleci-demo.git
+    ansistrano_git_branch: master
+    ansistrano_keep_releases: 0
+    ansistrano_after_update_code_tasks_file: "ansistrano-deploy-tasks/after_update_code_tasks.yml"
+
+  roles: 
+    - { role: "roles/carlosbuenosvinos.ansistrano-deploy" }
