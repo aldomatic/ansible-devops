@@ -1,0 +1,33 @@
+---
+- hosts: webserver
+  remote_user: dev-user
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  
+  vars: 
+    node_env: "production"
+    entry_file: "app.js"
+    application_name: "ansible-demo"
+
+    nodejs_instances:
+      - name: "{{application_name}}-{{node_env}}"
+        description: "{{application_name}} running in {{node_env}} mode."
+        repo: https://github.com/aldomatic/react-circleci-demo.git
+        version: master
+        dir: "/var/www/{{node_env}}/my-app"
+        keep_updated: yes
+        repo_recursive: yes
+        work_dir: "/var/www/{{node_env}}/my-app"
+        start: "/usr/bin/node {{entry_file}}"
+        stop: ''
+        user: dev-user
+        group: dev-user
+        environment:
+          - {name: NODE_ENV, value: "{{node_env}}"}
+          - {name: PORT, value: 8898}
+
+  roles: 
+    - { role: "roles/ansible-role-nodejs-systemd" }
+
+    

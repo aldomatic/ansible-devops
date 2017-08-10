@@ -56,7 +56,7 @@
 - name: Install systemd conf
   template: >
     src=systemd.conf.j2
-    dest=/etc/systemd/system/nodejs-{{ item.name }}.service
+    dest=/etc/systemd/system/app-{{ item.name }}.service
     owner=root
     group=root
     mode=0755
@@ -68,10 +68,10 @@
   tags: nodejs
 
 # - name: Make sure we reload services
-#   command: systemctl restart nodejs-{{ item.name }}
+#   command: systemctl restart app-{{ item.name }}
 #   tags: nodejs
 
 - name: Ensure services are started and enabled on boot
-  service: name=nodejs-{{ item.name }} state=restarted enabled=yes
+  service: name=app-{{ item.name }} state=restarted enabled=yes
   with_items: '{{ nodejs_instances }}'
   tags: nodejs
