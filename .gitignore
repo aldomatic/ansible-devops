@@ -1,3 +1,5 @@
 hosts
 static_files/*
 playbooks/*.retry
+playbooks/**/.DS_Store
+ansible.cfg
