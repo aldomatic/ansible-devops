@@ -53,6 +53,13 @@
 - debug:
     msg: "status: {{yarn_output}}"
 
+- name : Build project
+  shell: cd {{ item.work_dir }} && yarn build
+  register: yarn_build
+  with_items: '{{ nodejs_instances }}'
+- debug:
+    msg: "status: {{yarn_build}}"
+
 - name: Install systemd conf
   template: >
     src=systemd.conf.j2
